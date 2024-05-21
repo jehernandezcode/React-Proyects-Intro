@@ -2,15 +2,14 @@ import { useEffect, useState } from "react"
 
 import { getRamdomfactOfCat } from './services/facts'
 import { API_IMG_CAT} from './constans/Apis'
+import './app.css'
 
 
-function useCatSize ({fact}) {
+function useCatImgSize ({firstWord}) {
   const [sizeImg, setSizeImg] = useState()
-
+  console.log(firstWord)
   useEffect(() => {
-  if(!fact) return
-
-  const firstWord = fact.split(' ', 3).join(' ')
+  if(!firstWord) return
 
     fetch(`${API_IMG_CAT}/${firstWord}?json=true`)
     .then(res => {
@@ -24,18 +23,18 @@ function useCatSize ({fact}) {
     }).catch((err) => {
       console.error(err)
     })
-  }, [fact])
+  }, [firstWord])
 
 return { sizeImg }
 }
 
-function useFactFirstsWord ({fact}) {
+function useFactFirstsWord ({fact, nWords}) {
   const [firstWord, setFirstWord] = useState()
 
   useEffect(() => {
   if(!fact) return
 
-  const firstWord = fact.split(' ', 3).join(' ')
+  const firstWord = fact.split(' ', nWords).join(' ')
   setFirstWord(firstWord)
   }, [fact])
 
@@ -46,8 +45,8 @@ return { firstWord }
 export function App() {
 
   const [fact, setfact] = useState()
-  const { firstWord } = useFactFirstsWord({fact})
-  const { sizeImg } = useCatSize({fact})
+  const { firstWord } = useFactFirstsWord({fact, nWords: 4})
+  const { sizeImg } = useCatImgSize({firstWord})
 
 
   useEffect(() => {
@@ -57,14 +56,14 @@ export function App() {
   }, [])
 
 
-  const handleClick = async  () => {
+  const handleClick = async () => {
     const fact = await getRamdomfactOfCat()
     setfact(fact)
   }
   
   return (
     <main>
-      <h1>App de Gatos</h1>
+      <h1>Know Cats Facts</h1>
       <button onClick={handleClick}>Get new Cat</button>
       {fact && <p>{fact}</p>}
       {firstWord && <img src={`${API_IMG_CAT}/${firstWord}`}></img>}
